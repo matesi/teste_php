@@ -1,0 +1,25 @@
+services:
+  php-server:
+    build:
+      context: .
+    container_name: php-server
+    volumes:
+      - ./server:/usr/src/myapp
+    working_dir: /usr/src/myapp
+    command: php -S 0.0.0.0:9000
+    ports:
+      - "9000:9000"
+    network_mode: "host"
+    depends_on:
+      - pg
+
+  pg:
+    image: bitnami/postgresql:latest
+    container_name: pg
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USERNAME=docker
+      - POSTGRES_PASSWORD=docker
+      - POSTGRES_DB=llmservice
+    network_mode: "host"
