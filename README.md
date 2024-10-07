@@ -15,6 +15,7 @@ Pasta com os arquivos SQL.
 
 
 
+
 # Rodar o Projeto: # 
 
 ## Criar o script SQL (se não existir a pasta .migrate ou se ela estiver vazia) ##
