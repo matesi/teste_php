@@ -1,7 +1,7 @@
 services:
-  pg:
+  server-bd:
     image: bitnami/postgresql:latest
-    container_name: pg
+    container_name: server-bd
     hostname: localhost
     ports:
       - 5432:5432
@@ -9,6 +9,9 @@ services:
       - POSTGRES_USERNAME=root
       - POSTGRES_PASSWORD=root
       - POSTGRES_DB=laravel
+      - SERVICE_NAME=localhost
+      - POSTGRES_HOST=localhost
+      - POSTGRES_PORT=5432
     network_mode: "host"
 
   server-php:
@@ -18,14 +21,9 @@ services:
     volumes:
       - ./server-php:/usr/src/phpapp
     working_dir: /usr/src/phpapp
-    command:
-      - /bin/sh
-      - -c
-      - |
-        php artisan migrate
-        php artisan serve
+    command: php artisan serve
     ports:
       - "8000:8000"
     network_mode: "host"
     depends_on:
-      - pg
+      - server-bd
