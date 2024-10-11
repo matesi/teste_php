@@ -1,29 +1,38 @@
+version: "3.9"
+
 services:
-  server-bd:
+  postgres:
     image: bitnami/postgresql:latest
-    container_name: server-bd
-    hostname: localhost
+    container_name: postgres
+    env_file: ".env"
     ports:
-      - 5432:5432
+      - ${PG_PORT}:${PG_PORT}
     environment:
-      - POSTGRES_USERNAME=root
-      - POSTGRES_PASSWORD=root
-      - POSTGRES_DB=laravel
-      - SERVICE_NAME=localhost
-      - POSTGRES_HOST=localhost
-      - POSTGRES_PORT=5432
+      - POSTGRES_USERNAME=${PG_USERNAME}
+      - POSTGRES_PASSWORD=${PG_PASSWORD}
+      - POSTGRES_DB=${PG_DB}
+      - POSTGRES_PORT=${PG_PORT}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${PG_USERNAME} -d ${PG_DB}"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
     network_mode: "host"
 
   server-php:
     build:
       context: .
     container_name: server-php
+    env_file: ".env"
     volumes:
-      - ./server-php:/usr/src/phpapp
-    working_dir: /usr/src/phpapp
+      - ./${PHP_PATH_LOCAL}:/${PHP_PATH_DOCKER}
+    working_dir: /${PHP_PATH_DOCKER}
     command: php artisan serve
     ports:
-      - "8000:8000"
+      - ${PHP_PORT}:${PHP_PORT}
     network_mode: "host"
     depends_on:
-      - server-bd
+      postgres:
+        condition: service_healthy
+        restart: true
