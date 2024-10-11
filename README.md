@@ -13,7 +13,7 @@ Pasta do projeto PHP Laravel.
 ### - docker compose watch (sobe o container com os services, monitora os arquivos do service e atualiza os mesmos no container) ###
 
 ## Parar o projeto PHP Laravel e Banco de Dados Postgres ##
-### - docker compose up dowwn -v (Para o container com os services e remove os volumes) ###
+### - docker compose down -v (Para o container com os services e remove os volumes) ###
 
 
 
