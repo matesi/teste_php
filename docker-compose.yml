@@ -22,6 +22,11 @@ services:
     build:
       context: .
     container_name: server-php
+    x-develop:
+      watch:
+        - action: sync
+          path: ./${PHP_PATH_LOCAL}
+          target: /${PHP_PATH_DOCKER}
     env_file: ".env"
     volumes:
       - ./${PHP_PATH_LOCAL}:/${PHP_PATH_DOCKER}
