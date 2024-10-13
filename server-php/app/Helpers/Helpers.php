@@ -2,22 +2,24 @@
 
 use Carbon\Carbon;
 
-if (!function_exists('formatDate')) {
-    function formatDate($date = '', $format = 'Y-m-d')
+if (!function_exists('formatDateFromDB')) {
+    function formatDateFromDB($dateToFormat = '', $format = 'd/m/Y')
     {
-        if ($date == '' || $date == null)
+        if ($dateToFormat == '' || $dateToFormat == null)
             return;
 
-        return Carbon::parse($date)->format($format);
+        return Carbon::parse($dateToFormat)->format($format);
     }
 }
 
 if (!function_exists('formatDateToDB')) {
-    function formatDateToDB($date = '')
+    function formatDateToDB($dateToDb = '')
     {
-        if ($date == '' || $date == null)
+        if ($dateToDb == '' || $dateToDb == null) {
             return;
+        }
 
-        return Carbon::createFromFormat('Y-m-d\TH:i', strtotime($date));
+        $dateToDb = preg_replace('/(\/)/', '-', $dateToDb);
+        return date('Y-m-d\TH:i', strtotime($dateToDb));
     }
 }

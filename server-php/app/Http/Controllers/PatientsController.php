@@ -13,7 +13,7 @@ class PatientsController extends Controller
      */
     public function index()
     {
-        //
+        return view('Patients.index');
     }
 
     /**
@@ -29,7 +29,17 @@ class PatientsController extends Controller
      */
     public function store(StorePatientsRequest $request)
     {
-        //
+        $request->validate([
+            'file' => 'required|mimes:csv|max:2048', // Example validation rules
+        ]);
+        $file = $request->file('file');
+        $fileName = '/files/' . time() . '_' . $file->getClientOriginalName();
+        $filePath = $file->storeAs('/public/storage', $fileName);
+        $filePath = storage_path('app/public/storage/' . $filePath);
+        chmod($filePath, 0644);
+
+        return redirect()->back()->with('success', 'O arquivo foi enviado com sucesso.')
+            ->with('file', $$file->getClientOriginalName());
     }
 
     /**
