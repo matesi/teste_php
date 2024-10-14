@@ -12,4 +12,4 @@ Route::get('/patients', [PatientsController::class, 'index']);
 
 Route::post('/patients/upload', [PatientsController::class, 'store']);
 
-Route::get('/patients/verify', [PatientsController::class, 'verify']);
+Route::post('/patients/verify', [PatientsController::class, 'verify']);

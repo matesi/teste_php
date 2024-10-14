@@ -6,7 +6,7 @@ use App\Http\Requests\StorePatientsRequest;
 use App\Http\Requests\UpdatePatientsRequest;
 use App\Models\Patients;
 use Illuminate\Http\RedirectResponse;
-use Maatwebsite\Excel\Facades\Excel;
+use Request;
 
 class PatientsController extends Controller
 {
@@ -15,34 +15,74 @@ class PatientsController extends Controller
      */
     public function index()
     {
-        return view('Patients.store');
+        return view('Patients.storeForm');
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StorePatientsRequest $request): RedirectResponse
+    public function store(StorePatientsRequest $request)
     {
         $file = $request->file('file');
         $fileName = time() . '_' . $file->getClientOriginalName();
         $request->file->move(public_path('storage/files'), $fileName);
-        // return Redirect::route('patients/verify');
-        return redirect('patients/verify')->with('success', 'O arquivo foi enviado com sucesso.');
+        $filePathToRead = public_path('storage/files') . '/' . $fileName;
+        $getCsvData = file_get_contents($filePathToRead);
+        $csvData = array_map('str_getcsv', explode("\n", $getCsvData));
+        $verifyHeaders = $csvData[0];
+        $headers = ['nome1', 'nascimento', 'codigo', 'guia', 'entrada', 'saida'];
+        $errorMessage = 'O arquivo selecionado não contém os seguintes cabecalhos: ';
+        $messageView = 'O arquivo ' . $request->file->getClientOriginalName() . ' foi enviado com sucesso. Clique no botão Avançar (botão azul) para verificar o conteúdo do arquivo.';
+        $classDivMessageView = 'alert-success';
+        $disabled = '';
+        $classButtonDisabled = '';
+
+        foreach ($verifyHeaders as $key => $value) {
+            //echo $value . "\n";
+            if ($headers[$key] != $value) {
+                $errorMessage = $errorMessage . ($key > 0 ? ', ' : '') . $headers[$key];
+                $classDivMessageView = 'alert-danger';
+                $disabled = 'disabled ';
+                $classButtonDisabled = ' disabled-button';
+            }
+        }
+
+        //dd($verifyHeaders);
+
+        if ($classDivMessageView == 'alert-danger') {
+            $messageView = $errorMessage;
+        }
+
+        return view('Patients.storeResponse', [
+            'messageView' => $messageView,
+            'classDivMessageView' => $classDivMessageView,
+            'filenameInput' => $fileName,
+            'disabled' => $disabled,
+            'classButtonDisabled' => $classButtonDisabled
+        ]);
     }
 
     /**
      * Display the specified resource.
      */
-    public function verify($file = '1728863718_202404 - DADOS - 202404 - DADOS.csv')
+    public function verify(Request $request)
     {
-        $filePathToRead = public_path('storage/files');
-
-        $getCsvData = file_get_contents($filePathToRead . '/' . $file);
+        $filePathToRead = public_path('storage/files') . '/' . Request::post('fileName');
+        $getCsvData = file_get_contents($filePathToRead);
         $csvData = array_map('str_getcsv', explode("\n", $getCsvData));
-        dd($csvData);
-        
+        $csvHeaders = $csvData[0];
+        $patients = [];
 
-        //return view('Patients.verify', ['patients' => $csvData]);
+        foreach ($csvData as $key => $value) {
+            if ($key > 0) {
+                foreach ($csvHeaders as $keyHeader => $valueHeader) {
+                    $patients[$key][$csvHeaders[$keyHeader]] = $value[$keyHeader];
+                }
+            }
+        }
+        // dd($patients);
+
+        return view('Patients.verify', ['patients' => $patients, 'headers' => $csvHeaders]);
     }
 
     /**

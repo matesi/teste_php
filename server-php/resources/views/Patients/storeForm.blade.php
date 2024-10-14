@@ -16,12 +16,6 @@
             </h3>
             <div class="card-body">
 
-                @session('success')
-                    <div class="alert alert-success" role="alert">
-                        {{ $value }}
-                    </div>
-                @endsession
-
                 @error('file')
                     <div class="alert alert-danger" role="alert">{{ $message }}</div>
                 @enderror
@@ -36,7 +30,8 @@
                     </div>
 
                     <div class="mb-3">
-                        <button type="submit" class="btn btn-success"><i class="fa fa-save"></i> Upload</button>
+                        <button type="submit" class="btn btn-success"><i class="fa fa-save"></i>
+                            Upload</button>
                     </div>
                 </form>
             </div>
