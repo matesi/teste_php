@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StorePatientsRequest;
 use App\Http\Requests\UpdatePatientsRequest;
 use App\Models\Patients;
+use Illuminate\Http\RedirectResponse;
+use Maatwebsite\Excel\Facades\Excel;
 
 class PatientsController extends Controller
 {
@@ -13,33 +15,42 @@ class PatientsController extends Controller
      */
     public function index()
     {
-        return view('Patients.index');
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        return view('Patients.store');
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StorePatientsRequest $request)
+    public function store(StorePatientsRequest $request): RedirectResponse
     {
-        $request->validate([
-            'file' => 'required|mimes:csv|max:2048', // Example validation rules
-        ]);
         $file = $request->file('file');
-        $fileName = '/files/' . time() . '_' . $file->getClientOriginalName();
-        $filePath = $file->storeAs('/public/storage', $fileName);
-        $filePath = storage_path('app/public/storage/' . $filePath);
-        chmod($filePath, 0644);
+        $fileName = time() . '_' . $file->getClientOriginalName();
+        $request->file->move(public_path('storage/files'), $fileName);
+        // return Redirect::route('patients/verify');
+        return redirect('patients/verify')->with('success', 'O arquivo foi enviado com sucesso.');
+    }
 
-        return redirect()->back()->with('success', 'O arquivo foi enviado com sucesso.')
-            ->with('file', $$file->getClientOriginalName());
+    /**
+     * Display the specified resource.
+     */
+    public function verify($file = '1728863718_202404 - DADOS - 202404 - DADOS.csv')
+    {
+        $filePathToRead = public_path('storage/files');
+
+        $getCsvData = file_get_contents($filePathToRead . '/' . $file);
+        $csvData = array_map('str_getcsv', explode("\n", $getCsvData));
+        dd($csvData);
+        
+
+        //return view('Patients.verify', ['patients' => $csvData]);
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function insert()
+    {
+        //
     }
 
     /**
@@ -47,7 +58,7 @@ class PatientsController extends Controller
      */
     public function show(Patients $patients)
     {
-        //
+        $filePathToRead = 'storage/app/public/files';
     }
 
     /**
