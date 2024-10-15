@@ -8,8 +8,8 @@ Route::get('/', function () {
     return redirect('patients');
 });
 
-Route::get('/patients', [PatientsController::class, 'index']);
+Route::get('/patients', [PatientsController::class, 'index'])->name('patients');
 
-Route::post('/patients/upload', [PatientsController::class, 'store']);
+Route::post('/patients/upload', [PatientsController::class, 'store'])->name('patients.upload');
 
-Route::post('/patients/verify', [PatientsController::class, 'verify']);
+Route::post('/patients/verify', [PatientsController::class, 'verify'])->name('patients.verify');

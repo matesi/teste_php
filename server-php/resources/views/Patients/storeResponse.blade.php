@@ -32,9 +32,15 @@
                         <input type="hidden" name="fileName" id="fileName" value="{{ $filenameInput }}">
                     </div>
                     <div class="mb-3">
-                        <button type="submit" class="btn btn-primary{{ $classButtonDisabled }}" {{ $disabled }}>Avançar</button>
+                        <button type="submit" class="btn btn-primary{{ $classButtonDisabledAdvanced }}" {{ $disabledAdvanced }}>Avançar</button>
                     </div>
                 </form>
+
+                <div class="mb-3">
+                    <button type="button" class="btn btn-danger{{ $classButtonDisabledBack }}" {{ $disabledBack }}
+                        onclick="window.location='{{ route('patients') }}'">Voltar</button>
+                </div>
+
             </div>
         </div>
     </div>

@@ -25,40 +25,43 @@ class PatientsController extends Controller
     {
         $file = $request->file('file');
         $fileName = time() . '_' . $file->getClientOriginalName();
-        $request->file->move(public_path('storage/files'), $fileName);
-        $filePathToRead = public_path('storage/files') . '/' . $fileName;
-        $getCsvData = file_get_contents($filePathToRead);
+        $getCsvData = file_get_contents($file);
         $csvData = array_map('str_getcsv', explode("\n", $getCsvData));
         $verifyHeaders = $csvData[0];
-        $headers = ['nome1', 'nascimento', 'codigo', 'guia', 'entrada', 'saida'];
+        $headers = ['nome', 'nascimento', 'codigo', 'guia', 'entrada', 'saida'];
         $errorMessage = 'O arquivo selecionado não contém os seguintes cabecalhos: ';
         $messageView = 'O arquivo ' . $request->file->getClientOriginalName() . ' foi enviado com sucesso. Clique no botão Avançar (botão azul) para verificar o conteúdo do arquivo.';
         $classDivMessageView = 'alert-success';
-        $disabled = '';
-        $classButtonDisabled = '';
+        $disabledAdvanced = '';
+        $disabledBack = 'disabled ';
+        $classButtonDisabledAdvanced = '';
+        $classButtonDisabledBack = ' disabled-button';
 
         foreach ($verifyHeaders as $key => $value) {
-            //echo $value . "\n";
             if ($headers[$key] != $value) {
                 $errorMessage = $errorMessage . ($key > 0 ? ', ' : '') . $headers[$key];
                 $classDivMessageView = 'alert-danger';
-                $disabled = 'disabled ';
-                $classButtonDisabled = ' disabled-button';
+                $disabledAdvanced = 'disabled ';
+                $disabledBack = '';
+                $classButtonDisabledAdvanced = ' disabled-button';
+                $classButtonDisabledBack = '';
             }
         }
 
-        //dd($verifyHeaders);
-
         if ($classDivMessageView == 'alert-danger') {
-            $messageView = $errorMessage;
+            $messageView = $errorMessage . '. Clique no botão Voltar (botão vermelho) para enviar um novo arquivo com as colunas de cabeçalho corretas.';
+        } else if ($classDivMessageView == 'alert-success') {
+            $request->file->move(public_path('storage/files'), $fileName);
         }
 
         return view('Patients.storeResponse', [
             'messageView' => $messageView,
             'classDivMessageView' => $classDivMessageView,
             'filenameInput' => $fileName,
-            'disabled' => $disabled,
-            'classButtonDisabled' => $classButtonDisabled
+            'disabledAdvanced' => $disabledAdvanced,
+            'disabledBack' => $disabledBack,
+            'classButtonDisabledAdvanced' => $classButtonDisabledAdvanced,
+            'classButtonDisabledBack' => $classButtonDisabledBack
         ]);
     }
 
@@ -98,7 +101,7 @@ class PatientsController extends Controller
      */
     public function show(Patients $patients)
     {
-        $filePathToRead = 'storage/app/public/files';
+        //
     }
 
     /**
