@@ -22,7 +22,7 @@ Para o container com os services e remove os volumes.
 
 
 
-# Criar as tabelas no banco de dados do projeto: #
+# Criar as tabelas no banco de dados do projeto (Rodar dentro da pasta server-php): #
 
 ## Rodar comando do PHP Laravel para criar as tabelas ##
 ### - php artisan migrate --force ### 
@@ -31,7 +31,7 @@ Gera as tabelas no banco de dados do projeto.
 
 
 
-# Subir dados de teste nas tabelas no banco de dados do projeto: #
+# Subir dados de teste nas tabelas no banco de dados do projeto (Rodar dentro da pasta server-php): #
 
 ## Rodar comando do PHP Laravel para subir os dados de teste nas tabelas ##
 ### - php artisan db:seed ### 
@@ -41,3 +41,10 @@ Sobe os dados de teste para as tabelas no banco de dados do projeto.
 ## Rodar comando do PHP Laravel para subir os dados de teste para as tabelas de uma arquivo de seed específico ##
 ### - php artisan db:seed --class=PatientsSeeder ### 
 Sobe os dados de teste para as tabelas no banco de dados do projeto de aum arquivo de seed específico.
+
+
+
+## Rodar comando do PHP Laravel para subir os dados de teste para as tabelas de uma arquivo de seed específico ##
+### - ln -s /path/to/laravel/storage/app/public /path/to/public/storage (linux) ### 
+### - php artisan storage:link ### 
+Cria o link entre as pastas storage/app/public e public/storage.
