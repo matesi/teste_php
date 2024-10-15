@@ -83,7 +83,6 @@ class PatientsController extends Controller
                 }
             }
         }
-        // dd($patients);
 
         return view('Patients.verify', ['patients' => $patients, 'headers' => $csvHeaders]);
     }
