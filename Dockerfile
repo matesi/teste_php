@@ -20,6 +20,7 @@ RUN chmod +x run.sh
 # ## create docker user and set docker user as owner of run.sh
 RUN useradd -G www-data,root -u 1000 -d /home/docker docker
 RUN chown -R docker:docker /usr/src/phpapp/run.sh
+RUN chmod -Rf 777 /usr/src/phpapp/storage/app/public/files
 USER docker
 
 # ## set working directory and execute run.sh

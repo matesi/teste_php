@@ -51,7 +51,7 @@ class PatientsController extends Controller
         if ($classDivMessageView == 'alert-danger') {
             $messageView = $errorMessage . '. Clique no botão Voltar (botão vermelho) para enviar um novo arquivo com as colunas de cabeçalho corretas.';
         } else if ($classDivMessageView == 'alert-success') {
-            $request->file->move(public_path('storage/files'), $fileName);
+            $request->file->move(public_path('files'), $fileName);
         }
 
         return view('Patients.storeResponse', [
@@ -70,7 +70,7 @@ class PatientsController extends Controller
      */
     public function verify(Request $request)
     {
-        $filePathToRead = public_path('storage/files') . '/' . Request::post('fileName');
+        $filePathToRead = public_path('files') . '/' . Request::post('fileName');
         $getCsvData = file_get_contents($filePathToRead);
         $csvData = array_map('str_getcsv', explode("\n", $getCsvData));
         $csvHeaders = $csvData[0];
