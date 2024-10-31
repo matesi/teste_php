@@ -29,9 +29,10 @@ class StorePatientsRequest extends FormRequest
 
     public function messages(): array
     {
+        $archiveName = !$this->file || !$this->file->isValid() ? '' : $this->file->getClientOriginalName();
         return [
             'file.required' => 'O campo Selecione o arquivo é obrigatório',
-            'file.mimes' => 'O arquivo deve ser do tipo CSV. Arquivo selecionado: ' . $this->file->getClientOriginalName(),
+            'file.mimes' => 'O arquivo deve ser do tipo CSV. Arquivo selecionado: ' . $archiveName,
             'file.max' => 'O arquivo deve ter no máximo 2MB.',
         ];
     }

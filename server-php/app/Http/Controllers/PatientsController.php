@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StorePatientsRequest;
 use App\Http\Requests\UpdatePatientsRequest;
 use App\Models\Patients;
-use Illuminate\Http\RedirectResponse;
 use Request;
 
 class PatientsController extends Controller
@@ -24,34 +23,39 @@ class PatientsController extends Controller
     public function store(StorePatientsRequest $request)
     {
         $file = $request->file('file');
-        $fileName = time() . '_' . $file->getClientOriginalName();
+        //$fileName = time() . '_' . $file->getClientOriginalName();
+        $fileName = nameUploadFile($file);
         $getCsvData = file_get_contents($file);
         $csvData = array_map('str_getcsv', explode("\n", $getCsvData));
         $verifyHeaders = $csvData[0];
-        $headers = ['nome', 'nascimento', 'codigo', 'guia', 'entrada', 'saida'];
         $errorMessage = 'O arquivo selecionado não contém os seguintes cabecalhos: ';
-        $messageView = 'O arquivo ' . $request->file->getClientOriginalName() . ' foi enviado com sucesso. Clique no botão Avançar (botão azul) para verificar o conteúdo do arquivo.';
+        $messageView = 'O arquivo ' . $file->getClientOriginalName() . ' foi enviado com sucesso. Clique no botão Avançar (botão azul) para verificar o conteúdo do arquivo.';
         $classDivMessageView = 'alert-success';
         $disabledAdvanced = '';
         $disabledBack = 'disabled ';
         $classButtonDisabledAdvanced = '';
         $classButtonDisabledBack = ' disabled-button';
+        $returnValidation = VerifyNamesCsvColumns($verifyHeaders);
 
-        foreach ($verifyHeaders as $key => $value) {
-            if ($headers[$key] != $value) {
-                $errorMessage = $errorMessage . ($key > 0 ? ', ' : '') . $headers[$key];
+        if ($returnValidation['statusCode'] != 200) {
+            $errorMessage = $returnValidation['message'];
+            $classDivMessageView = 'alert-danger';
+            $disabledAdvanced = 'disabled ';
+            $disabledBack = '';
+            $classButtonDisabledAdvanced = ' disabled-button';
+            $classButtonDisabledBack = '';
+            $messageView = $errorMessage . '. Clique no botão Voltar (botão vermelho) para enviar um novo arquivo com as colunas de cabeçalho corretas.';
+        } else {
+            $storedFile = $file->storeAs('files', $fileName);
+
+            if (!$storedFile) {
+                $messageView = 'Não foi possível o enviar o arquivo no momento. Por favor, clique no botão Voltar (botão vermelho) para enviar novamente o arquivo.';
                 $classDivMessageView = 'alert-danger';
                 $disabledAdvanced = 'disabled ';
                 $disabledBack = '';
                 $classButtonDisabledAdvanced = ' disabled-button';
                 $classButtonDisabledBack = '';
             }
-        }
-
-        if ($classDivMessageView == 'alert-danger') {
-            $messageView = $errorMessage . '. Clique no botão Voltar (botão vermelho) para enviar um novo arquivo com as colunas de cabeçalho corretas.';
-        } else if ($classDivMessageView == 'alert-success') {
-            $request->file->move(public_path('files'), $fileName);
         }
 
         return view('Patients.storeResponse', [
