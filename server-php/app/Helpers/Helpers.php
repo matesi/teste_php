@@ -44,7 +44,7 @@ if (!function_exists('VerifyNamesCsvColumns')) {
         foreach ($verifyHeaders as $key => $value) {
             if ($headers[$key] != $value) {
                 $errorColumns++;
-                $statusCode = 400;
+                $returnStatusCode = 400;
                 $errorMessage = $errorMessage . ($key > 0 ? ', ' : '') . $headers[$key];
             }
         }
